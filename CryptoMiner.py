@@ -9,7 +9,26 @@ import time
 import json
 import base64
 
-# Saving
+# Color init
+fred = Fore.RED
+fyellow = Fore.YELLOW
+fgreen = Fore.GREEN
+fcyan = Fore.CYAN
+fblue = Fore.BLUE
+fmagenta = Fore.MAGENTA
+fwhite = Fore.WHITE
+fblack = Fore.BLACK
+
+# Language selection
+lang = input("What is your language? / Какой у вас язык? [en/RU]: ").lower().strip()
+
+if lang == "ru" or "en":
+    pass
+else:
+    print("Unknown language.")
+    sys.exit()
+
+# Game Saving
 def Save(money, multiplier, upgradeprice):
     print(money)
     if not os.path.exists(os.environ['HOME'] + "/.CryptoMiner"):
@@ -30,9 +49,12 @@ def Save(money, multiplier, upgradeprice):
     # Writing
     with open("save.json", "w", encoding="utf-8") as outfile:
         outfile.write(json_object)
-        print("Saved!")
+        if lang == "ru":
+            print(f"{fgreen}Игра сохранена!")
+        else:
+            print(f"{fgreen}Game saved!")
 
-# Loading
+# Game Loading
 def Load():
     os.chdir(os.environ['HOME'] + "/.CryptoMiner")    
     # Opening JSON file
@@ -47,6 +69,15 @@ def Load():
     money = save["money"]
     upgradeprice = save["upgradeprice"]
     multiplier = save["multiplier"]
+
+# Rounding: Millions to M, Billions to B, Trillions to T.
+def human_format(num, round_to=2):
+    magnitude = 0
+    while abs(num) >= 1000:
+        magnitude += 1
+        num = round(num / 1000.0, round_to)
+    return '{:.{}f}{}'.format(num, round_to, ['', 'K', 'M', 'B', 'T', 'Q'][magnitude])
+
 
 # Check for saves
 def SaveCheck():
@@ -63,8 +94,11 @@ def SaveCheck():
     money = 0
     multiplier = 1
     upgradeprice = 25
-    
+
+# Assign variables
 btcprice = 10000
+getbtc = 0
+getmoney = 0
 
 
 # Check the system type and clear console
@@ -73,17 +107,10 @@ if os.name == "nt":
 else:
     os.system("clear")
 
-fred = Fore.RED
-fyellow = Fore.YELLOW
-fgreen = Fore.GREEN
-fcyan = Fore.CYAN
-fblue = Fore.BLUE
-fmagenta = Fore.MAGENTA
-fwhite = Fore.WHITE
-fblack = Fore.BLACK
+# Cool logo with cool font
+print(fgreen, pyfiglet.figlet_format("CryptoMiner"))
 
-print(fgreen, pyfiglet.figlet_format("CryptoFarmer"))
-
+# Main function
 def main(): 
     SaveCheck()
     
@@ -91,16 +118,19 @@ def main():
     btcwatchdog.start()
     
     CommandInterpreter()
+    
 
+# Bitcoin volatility and autosaves
 def bitcoinprice():
     while True:
-        time.sleep(5)
+        time.sleep(60)
         
         global multiplier
         global btcprice
         global localprice
         global money
         global upgradeprice
+        global lang
         
         Save(money, multiplier, upgradeprice)
         
@@ -118,25 +148,40 @@ def bitcoinprice():
         if up == True:
             btcprice = round(btcprice + (percentage * btcprice))
             multiplier = round(multiplier + (percentage * multiplier), 1)
-            
-            print(f"\n\n{fgreen}:) {fyellow}Биткойн {fwhite}подорожал. Новая цена: {fgreen}{btcprice}${fwhite}.\n")
+            if lang == "ru":
+                print(f"\n\n{fgreen}:) {fyellow}Биткойн {fwhite}подорожал. Новая цена: {fgreen}{btcprice}${fwhite}.\n")
+            else:
+                print(f"\n\n{fgreen}:) {fyellow}Bitcoin {fwhite}has risen in price. New price: {fgreen}{btcprice}${fwhite}.\n")
             continue
             
         elif up == False:
             btcprice = round(btcprice - (percentage * btcprice))
             multiplier = round(multiplier - (percentage * multiplier), 1)
             
-            print(f"\n\n{fred}:( {fyellow}Биткойн {fwhite}упал в цене. Новая цена: {fgreen}{btcprice}${fwhite}.\n")       
+            if lang == "ru":
+                print(f"\n\n{fred}:( {fyellow}Биткойн {fwhite}упал в цене. Новая цена: {fgreen}{btcprice}${fwhite}.\n")
+            else:
+                print(f"\n\n{fred}:( {fyellow}Bitcoin {fwhite}fell in price. New price: {fgreen}{btcprice}${fwhite}.\n")      
         
 
 
-
+# Earn money by mining
 def mine(mult):
     global money
+    global getmoney
+    global getbtc
+    
     getmoney = 1 * mult
     getbtc = getmoney / 1000
+    
     money = money + getmoney
-    print(f"Вы добыли {fyellow}{getbtc} BTC{fwhite} и обменяли на {fgreen}{getmoney}${fwhite}.")
+    
+    getmoney = human_format(getmoney)
+    
+    if lang == "ru":
+        print(f"Вы добыли {fyellow}{getbtc} BTC{fwhite} и обменяли на {fgreen}{getmoney}${fwhite}.")
+    else:
+        print(f"You have mined {fyellow}{getbtc} BTC{fwhite} and exchanged for {fgreen}{getmoney}${fwhite}.")
     
 def upgrade():
     global multiplier
@@ -146,42 +191,65 @@ def upgrade():
         money = money - upgradeprice
         multiplier = round(multiplier * 1.5, 1)
         upgradeprice = upgradeprice * 1.5
+        upgradeprice_human = human_format(upgradeprice)
         
-        print(f"Вы прокачали ваши мощности! Новая цена прокачки {upgradeprice}$.")
+        if lang == "ru":
+            print(f"Вы прокачали ваши мощности! Новая цена прокачки {upgradeprice_human}$.")
+        else:
+            print(f"You have upgraded your powers! The new upgrade price is {upgradeprice_human}$.")
            
     else:
-        print(f"У вас недостаточно средств. Вам нужно {upgradeprice}")
-    
+        if lang == "ru":
+            print(f"У вас недостаточно средств. Вам нужно {upgradeprice_human}")
+        else:
+            print(f"You don't have enough funds. You need {upgradeprice_human}")
+
+# Function that returns balance of a player
 def balance():
     global money
     money = round(money, 2)
-    retmoney = str(money) + "$"
+    retmoney = human_format(money) + "$"
     return retmoney
 
+# Help command
 def CommandList():
     len_now = 0
-    CommandList = ["help", "m", "upgrade", "money", "btc"]
-    DescriptionList = ["- Вывести это сообщение.", "- Добывает биткойн и увеличивает ваш баланс.", "- Обновляет ваши видеокарты. Дает прирост к заработку.", "- Выводит количиство ваших денег.", "- Курс биткойна сейчас"]
+    CommandList = ["help", "m", "upgrade", "money", "btc", "save"]
+    if lang == "ru":
+        DescriptionList = ["- Вывести это сообщение.", "- Добывает биткойн и увеличивает ваш баланс.", "- Обновляет ваши видеокарты. Дает прирост к заработку.", "- Выводит количиство ваших денег.", "- Курс биткойна сейчас.", "- Сохраняет игру."]
+    else:
+        DescriptionList = ["- Display this message.", "- Mines bitcoin and increases your balance.", "- Upgrades your video cards. Gives an increase in earnings.", "- Displays the amount of your money.", "- Bitcoin rate now.", "- Saves the game."]
     while len_now < len(DescriptionList) and len_now < len(CommandList):
         print(fyellow + CommandList[len_now] + fwhite + ' ' + DescriptionList[len_now])
         len_now = len_now + 1
 
+# Command interpreter (Main control panel)
 def CommandInterpreter():
+    global money
+    global multiplier
+    global upgradeprice
     exitlist = ["exit", "leave", "q", "quit"]
     while True:
         try:
             command = input(fblue + "> " + fwhite).lower().split()
             
         except KeyboardInterrupt:
-            print("\nВыходим...")
+            if lang == "ru":
+                print("Выходим...")
+            else:
+                print("Exiting...")
             sys.exit()
             
         if command == None or "":
             continue
         try:
             if command[0] == "help":
-                print("All commands: \n")
+                if lang == "ru":
+                    print("Все команды: \n")
+                else:
+                    print("All commands: \n")
                 CommandList()
+                continue
         except Exception:
             continue
         
@@ -190,19 +258,39 @@ def CommandInterpreter():
             
         elif command[0] == "money":
             print(balance())
+        
+        elif command[0] == "iusearchbtw":
+            money = 1000000
             
         elif command[0] == "btc":
-            print(btcprice)
+            if lang == "ru":
+                print(f"Цена биткойна: {fyellow}{btcprice}BTC")
+            else:
+                print(f"Bitcoin price is: {fyellow}{btcprice}BTC")
 
         elif command[0] == "upgrade":
             upgrade()
+        elif command[0] == "save":
+            Save(money, multiplier, upgradeprice)
+            if lang == "ru":
+                print(f"{fgreen}Игра сохранена!")
+            else:
+                print(f"{fgreen}Game saved!")
             
         elif command[0] in exitlist:
-            print("Выходим...")
+            if lang == "ru":
+                print("Выходим...")
+            else:
+                print("Exiting...")
             sys.exit()
             
         else:
-            print("Неизвестная команда.")
+            if lang == "ru":
+                print("Неизвестная команда. Напишите 'help' для помощи.")
+            else:
+                print("Unknown command. Type 'help' for help.")
 
 main()
+
+
 
