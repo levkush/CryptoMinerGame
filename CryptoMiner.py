@@ -9,9 +9,6 @@ import time
 import json
 import base64
 
-
-
-
 # Saving
 def Save(money, multiplier, upgradeprice):
     print(money)
