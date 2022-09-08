@@ -11,5 +11,5 @@ MIT Лицензия (Всем разрешаю копировать и испо
 This is a bitcoin mining clicker game with price fluctuations.
 Written in Python 3.
 MIT License (I allow everyone to copy and use).
-Write to the discord levkush#6890 or telegram https://t.me/levkush
+Contact to me: discord levkush#6890 or telegram https://t.me/levkush
 Bye.
