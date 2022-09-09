@@ -83,7 +83,10 @@ def human_format(num, round_to=2):
 def SaveCheck():
     if os.path.exists(os.path.expanduser('~') + "/.CryptoMiner"):
         Load()
-        print("Progress backuped!")
+        if lang == "ru":
+            print("Прогресс восстановлен!")
+        else:
+            print("Progress backuped!")
         return None
     
     # If no saves defaulting
