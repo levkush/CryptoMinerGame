@@ -202,6 +202,7 @@ def upgrade():
             print(f"You have upgraded your powers! The new upgrade price is {upgradeprice_human}$.")
            
     else:
+        upgradeprice_human = human_format(upgradeprice)
         if lang == "ru":
             print(f"У вас недостаточно средств. Вам нужно {upgradeprice_human}")
         else:
