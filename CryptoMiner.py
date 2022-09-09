@@ -31,10 +31,10 @@ else:
 # Game Saving
 def Save(money, multiplier, upgradeprice):
     print(money)
-    if not os.path.exists(os.environ['HOME'] + "/.CryptoMiner"):
-        os.mkdir(os.environ['HOME'] + "/.CryptoMiner")
+    if not os.path.exists(os.path.expanduser('~') + "/.CryptoMiner"):
+        os.mkdir(os.path.expanduser('~') + "/.CryptoMiner")
         
-    os.chdir(os.environ['HOME'] + "/.CryptoMiner")
+    os.chdir(os.path.expanduser('~') + "/.CryptoMiner")
     
     # Data to be written
     dictionary = {
@@ -56,7 +56,7 @@ def Save(money, multiplier, upgradeprice):
 
 # Game Loading
 def Load():
-    os.chdir(os.environ['HOME'] + "/.CryptoMiner")    
+    os.chdir(os.path.expanduser('~') + "/.CryptoMiner")    
     # Opening JSON file
     with open('save.json', 'r') as openfile:
         # Reading from json file
@@ -81,7 +81,7 @@ def human_format(num, round_to=2):
 
 # Check for saves
 def SaveCheck():
-    if os.path.exists(os.environ['HOME'] + "/.CryptoMiner"):
+    if os.path.exists(os.path.expanduser('~') + "/.CryptoMiner"):
         Load()
         print("Progress backuped!")
         return None
@@ -264,9 +264,9 @@ def CommandInterpreter():
             
         elif command[0] == "btc":
             if lang == "ru":
-                print(f"Цена биткойна: {fyellow}{btcprice}BTC")
+                print(f"Цена биткойна: {fyellow}{btcprice}$")
             else:
-                print(f"Bitcoin price is: {fyellow}{btcprice}BTC")
+                print(f"Bitcoin price is: {fyellow}{btcprice}$")
 
         elif command[0] == "upgrade":
             upgrade()
