@@ -76,7 +76,7 @@ def human_format(num, round_to=2):
     while abs(num) >= 1000:
         magnitude += 1
         num = round(num / 1000.0, round_to)
-    return '{:.{}f}{}'.format(num, round_to, ['', 'K', 'M', 'B', 'T', 'Q'][magnitude])
+    return '{:.{}f}{}'.format(num, round_to, ['', 'K', 'M', 'B', 'T', 'Q', 'Qi', 'Sx', 'Sp', 'O', 'N', 'D'][magnitude])
 
 
 # Check for saves
